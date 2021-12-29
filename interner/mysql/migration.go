@@ -9,10 +9,8 @@ import (
 var ErrMigration = fmt.Errorf("can not migrate database")
 
 func Migration() error {
-	db, err := Connection()
-	if err != nil {
-		return ErrConnection
-	}
+	db := Connection()
+
 	if err := db.AutoMigrate(
 		&model.User{},
 		&model.Category{},
