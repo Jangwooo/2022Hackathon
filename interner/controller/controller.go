@@ -1,6 +1,17 @@
 package controller
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"os"
+
+	"github.com/Jangwooo/2022Hackathon/interner/domain/object/request"
+	"github.com/Jangwooo/2022Hackathon/interner/domain/object/response"
+	"github.com/Jangwooo/2022Hackathon/interner/middleware"
+	"github.com/Jangwooo/2022Hackathon/interner/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -42,4 +53,56 @@ func SetUp() *gin.Engine {
 	}
 
 	return r
+}
+
+func (Controller) SignIn(c *gin.Context) {
+	req := request.SingIn{}
+	if err := c.ShouldBind(&req); err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	res, err := service.SignIn(req)
+
+	switch err {
+	case nil:
+		c.JSON(http.StatusOK, res)
+	case service.ErrNoMatchingUsers, service.ErrPasswordMismatch:
+		c.JSON(http.StatusBadRequest, response.Error{Massage: err.Error()})
+	default:
+		log.Panic("unknown error")
+	}
+}
+
+func (Controller) SignUp(c *gin.Context) {
+	req := request.SignUp{}
+	if err := c.ShouldBind(&req); err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	err := service.SignUp(req)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.Error{Massage: err.Error()})
+		return
+	}
+
+	c.Status(http.StatusCreated)
+}
+
+func (Controller) CreatePost(c *gin.Context) {
+	req := request.CreatePost{}
+	if err := c.ShouldBind(&req); err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	err := service.CreatePost(req, c.GetString("userID"))
+
+	switch err {
+	case nil:
+		c.Status(http.StatusCreated)
+	default:
+		log.Panic("unknown error")
+	}
 }
