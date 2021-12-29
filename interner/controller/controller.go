@@ -103,6 +103,6 @@ func (Controller) CreatePost(c *gin.Context) {
 	case nil:
 		c.Status(http.StatusCreated)
 	default:
-		log.Panic("unknown error")
+		log.Panic(err.Error())
 	}
 }
