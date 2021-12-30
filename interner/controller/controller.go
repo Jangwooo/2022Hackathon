@@ -13,6 +13,9 @@ import (
 	"github.com/Jangwooo/2022Hackathon/interner/middleware"
 	"github.com/Jangwooo/2022Hackathon/interner/service"
 	"github.com/gin-gonic/gin"
+	"github.com/itsjamie/gin-cors"
+	swaggerFiles "github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
 )
 
 type Controller struct{}
@@ -55,6 +58,17 @@ func SetUp() *gin.Engine {
 	return r
 }
 
+// SignIn
+// @Summary 로그인
+// @Name sign In
+// @Router /user/sign_in [POST]
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param json body request.SingIn true "유저 아이디, 비밀번호"
+// @Success 200 {object} response.SingIn
+// @failure 400 {object} response.Error
+// @failure 500 {object} response.Error "서버에서 뭔가 큰일이 일어나고 있음.."
 func (Controller) SignIn(c *gin.Context) {
 	req := request.SingIn{}
 	if err := c.ShouldBind(&req); err != nil {
@@ -73,6 +87,17 @@ func (Controller) SignIn(c *gin.Context) {
 	}
 }
 
+// SignUp
+// @Summary 회원가입
+// @Name sign up
+// @Router /user/sign_up [POST]
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param json body request.SignUp true "유저 정보"
+// @Success 201
+// @failure 400 {object} response.Error
+// @failure 500 {object} response.Error "서버에서 뭔가 큰일이 일어나고 있음.."
 func (Controller) SignUp(c *gin.Context) {
 	req := request.SignUp{}
 	if err := c.ShouldBind(&req); err != nil {
@@ -90,6 +115,19 @@ func (Controller) SignUp(c *gin.Context) {
 	c.Status(http.StatusCreated)
 }
 
+// CreatePost
+// @Summary 글 작성
+// @Name Create post
+// @Router /post [POST]
+// @Tags Post
+// @Accept json
+// @Produce json
+// @Param json body request.CreatePost true "글 정보"
+// @Param Authorization header string true "API 토큰"
+// @Success 201 "글 생성 성공"
+// @failure 400 {object} response.Error
+// @failure 403 {object} response.Error "api 키가 올바르지 않음"
+// @failure 500 {object} response.Error "서버에서 뭔가 큰일이 일어나고 있음.."
 func (Controller) CreatePost(c *gin.Context) {
 	req := request.CreatePost{}
 	if err := c.ShouldBind(&req); err != nil {
@@ -105,4 +143,42 @@ func (Controller) CreatePost(c *gin.Context) {
 	default:
 		log.Panic(err.Error())
 	}
+}
+
+// GetPosts
+// @Summary 게시글 목록 가져오기
+// @Name Get posts
+// @Router /post [GET]
+// @Tags Post
+// @Accept json
+// @Produce json
+// @Param category query string false "1 - 벼락치기. 2 - 결정장애. 3 - 설득하기. 아무것도 주지 않을 시 전체검색"
+// @Success 200 {object} response.Posts
+// @failure 400 {object} response.Error
+// @failure 500 {object} response.Error "서버에서 뭔가 큰일이 일어나고 있음.."
+func (Controller) GetPosts(c *gin.Context) {
+	req := request.GetPosts{}
+	if err := c.ShouldBind(&req); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, response.Error{Massage: err.Error()})
+		return
+	}
+
+	res := service.GetPosts(req)
+	c.JSON(200, res)
+}
+
+// GetPost
+// @Summary 게시글 상세정보 가져오기
+// @Name Get post
+// @Router /post/:post_id [GET]
+// @Tags Post
+// @Accept json
+// @Produce json
+// @Param post_id path string true "게시글 ID"
+// @Success 200 {object} response.Post
+// @failure 400 {object} response.Error
+// @failure 500 {object} response.Error "서버에서 뭔가 큰일이 일어나고 있음.."
+func (Controller) GetPost(c *gin.Context) {
+	res := service.GetPost(c.Param("post_id"))
+	c.JSON(200, res)
 }
