@@ -2,6 +2,8 @@ package model
 
 import (
 	"time"
+
+	"github.com/Jangwooo/2022Hackathon/interner/domain/object"
 )
 
 type Post struct {
@@ -10,6 +12,7 @@ type Post struct {
 	CategoryID uint
 	Title      string    `gorm:"not null"`
 	Content    string    `gorm:"not null"`
+	Detail     string    `gorm:"not null"`
 	CreatedAt  time.Time `gorm:"not null"`
 
 	Category Category
@@ -17,4 +20,16 @@ type Post struct {
 
 func (Post) TableName() string {
 	return "post"
+}
+
+func (p Post) ToObject() object.Post {
+	return object.Post{
+		ID:         p.ID,
+		UserID:     p.UserID,
+		Title:      p.Title,
+		CategoryID: p.CategoryID,
+		Content:    p.Content,
+		Detail:     p.Detail,
+		CreatedAt:  p.CreatedAt,
+	}
 }
