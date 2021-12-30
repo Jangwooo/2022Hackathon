@@ -63,9 +63,11 @@ func SetUp() *gin.Engine {
 		u.POST("/sign_in", ctl.SignIn)
 	}
 
-	p := r.Group("/post").Use(middleware.Auth)
+	p := r.Group("/post")
 	{
-		p.POST("/", ctl.CreatePost)
+		p.POST("/", middleware.Auth, ctl.CreatePost)
+		p.GET("/", ctl.GetPosts)
+		p.GET("/:post_id", ctl.GetPost)
 	}
 
 	return r
