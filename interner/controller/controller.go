@@ -32,6 +32,17 @@ func SetUp() *gin.Engine {
 	ctl := Controller{}
 	r := gin.New()
 
+	r.Use(cors.Middleware(cors.Config{
+		ValidateHeaders: false,
+		Origins:         "*",
+		RequestHeaders: "Origin, Authorization, Content-Type, Referer, Accept, User-Agent, Accept-Encoding, " +
+			"Accept-Language, Cache-Control, Connection, Host, Pragma, Sec-Fetch-Mode",
+		ExposedHeaders: "",
+		Methods:        "GET, POST",
+		MaxAge:         50 * time.Second,
+		Credentials:    true,
+	}))
+
 	r.Use(gin.CustomRecovery(func(c *gin.Context, err interface{}) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, response.Error{Massage: fmt.Sprint(err)})
 	}))
