@@ -70,6 +70,8 @@ func SetUp() *gin.Engine {
 		p.GET("/:post_id", ctl.GetPost)
 	}
 
+	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	return r
 }
 
