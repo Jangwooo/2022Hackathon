@@ -89,7 +89,7 @@ func SetUp() *gin.Engine {
 func (Controller) SignIn(c *gin.Context) {
 	req := request.SingIn{}
 	if err := c.ShouldBind(&req); err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
+		c.AbortWithStatusJSON(http.StatusBadRequest, response.Error{Massage: err.Error()})
 		return
 	}
 	res, err := service.SignIn(req)
@@ -118,7 +118,7 @@ func (Controller) SignIn(c *gin.Context) {
 func (Controller) SignUp(c *gin.Context) {
 	req := request.SignUp{}
 	if err := c.ShouldBind(&req); err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
+		c.AbortWithStatusJSON(http.StatusBadRequest, response.Error{Massage: err.Error()})
 		return
 	}
 
@@ -129,7 +129,7 @@ func (Controller) SignUp(c *gin.Context) {
 		return
 	}
 
-	c.Status(http.StatusCreated)
+	c.JSON(http.StatusCreated, response.Message{Message: "success"})
 }
 
 // CreatePost
@@ -148,7 +148,7 @@ func (Controller) SignUp(c *gin.Context) {
 func (Controller) CreatePost(c *gin.Context) {
 	req := request.CreatePost{}
 	if err := c.ShouldBind(&req); err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
+		c.AbortWithStatusJSON(http.StatusBadRequest, response.Error{Massage: err.Error()})
 		return
 	}
 
@@ -156,7 +156,7 @@ func (Controller) CreatePost(c *gin.Context) {
 
 	switch err {
 	case nil:
-		c.Status(http.StatusCreated)
+		c.JSON(http.StatusCreated, response.Message{Message: "success"})
 	default:
 		log.Panic(err.Error())
 	}
