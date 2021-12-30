@@ -55,6 +55,8 @@ func SetUp() *gin.Engine {
 			params.Method, params.Path, params.Request.Header, body)
 	}))
 
+	r.Static("/image", os.Getenv("image_root"))
+
 	u := r.Group("/user")
 	{
 		u.POST("/sign_up", ctl.SignUp)
