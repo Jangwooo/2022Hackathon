@@ -1,4 +1,8 @@
 tmp
 /.idea
 config
+/docs
+interner/image
+/.log
+app
 

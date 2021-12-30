@@ -14,5 +14,6 @@ func CreatePost(req request.CreatePost, userID string) error {
 		CategoryID: req.CategoryID,
 		Title:      req.Title,
 		Content:    req.Content,
+		Detail:     req.Detail,
 	}).Error
 }
