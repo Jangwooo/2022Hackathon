@@ -20,7 +20,7 @@ func Connection() *gorm.DB {
 	sqlDB, err := sql.Open("mysql", dsn)
 	db, err := gorm.Open(mysql.New(mysql.Config{
 		Conn:              sqlDB,
-		DefaultStringSize: 256,
+		DefaultStringSize: 191,
 	}))
 
 	if err != nil {
